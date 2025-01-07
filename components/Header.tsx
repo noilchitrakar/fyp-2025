@@ -262,14 +262,45 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
               <Button variant="ghost" size="icon" className="mr-2 relative">
                 <Bell className="h-5 w-5 text-gray-500" />
                 {/* this displays the bell icon */}
-                {notification.length > 0 && (
+                {notification.length > 0 && ( //if something is comming from the notification that is unread
                   <Badge className="absolute -top-1 -right-1 px-1 min-w-[1.2rem] h-5">
                     {notification.length}
                   </Badge>
                 )}
               </Button>
             </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-64">
+              {notification.length > 0 ? ( // this will display all the unread nofitication fetching from the database
+                notification.map((notification: any) => (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    onClick={() => handleNotificationClick(notification.id)} // when the unread notificaiton is click it is set to default notification state
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium">{notification.type}</span>
+                      <span className="text-sm text-gray-500">
+                        {notification.message}
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                // this is the else case when there is no new notificaiton (default case )
+                <DropdownMenuItem>No new notification</DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
           </DropdownMenu>
+          {/* creates the coins icon and coins amount for the user */}
+          <div className="mr-2 md:mr-4 flex items-center bg-gray-100 roundeed-full px-2 md:px-3 py-1">
+            {/* customizing the coin icon  */}
+            <Coins className="h-4 w-4 md:h-5 md:w-5 mr-1 text-green-500" />
+            {/* customizing the number icon  */}
+            <span className="font-semibold text-sm md:text-base text-gray-800">
+              {/* setting it to 2 decimal  */}
+              {balance.toFixed(2)}
+            </span>
+          </div>
         </div>
       </div>
     </header>
