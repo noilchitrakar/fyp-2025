@@ -35,7 +35,7 @@ import {
   getRewardTransactions,
 } from "@/utils/db/action";
 
-// import {useMediaQuery} from "@/hooks/useMediaQuery";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const clientId = process.env.WEB3_AUTH_CLIENT_ID;
 
@@ -73,7 +73,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
   const pathname = usePathname();
   const [notification, setNotification] = useState<Notification[]>([]);
   const [balance, setBalance] = useState(0);
-  //   const isMobile = useMediaQuery("(max-width:768px)");
+  const isMobile = useMediaQuery("(max-width:768px)"); //this is what you view in your mobile view with max-width(768px) in mobile
   useEffect(() => {
     // this is the use effect that is going to initalize the web3auth and also create the user
     const init = async () => {
@@ -227,6 +227,49 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
           >
             <Menu className="h-6 w-6 text-gray-800" />
           </Button>
+          <Link href="/" className="flex items-center">
+            <Leaf className="h-6 w-6 md:h-8 md:w-8 text-green-500 mr-1 md:mr-2" />
+            {/* this scustomizes the icon */}
+            <span className="font-bold text-base md:text-lg text-gray-800">
+              {/* this is for wastesnap font cutomization */}
+              WasteSnap
+            </span>
+          </Link>
+        </div>
+        {!isMobile && ( //to create the search bar and icon(for desktop only)
+          <div className="flex-1 max-w-xl mx-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="search ..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 "
+              />
+              {/* search bar and it customization for when clicken changes to green */}
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              {/* this is the search icon inside the search bar */}
+            </div>
+          </div>
+        )}
+        <div className="flex items-center">
+          {isMobile && ( //for mobile only
+            <Button variant="ghost" size="icon" className="mr-2">
+              <Search className="h-5 w-5" />
+            </Button>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="mr-2 relative">
+                <Bell className="h-5 w-5 text-gray-500" />
+                {/* this displays the bell icon */}
+                {notification.length > 0 && (
+                  <Badge className="absolute -top-1 -right-1 px-1 min-w-[1.2rem] h-5">
+                    {notification.length}
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
         </div>
       </div>
     </header>
