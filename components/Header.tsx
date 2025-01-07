@@ -301,6 +301,19 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
               {balance.toFixed(2)}
             </span>
           </div>
+          {!loggedIn ? ( // setting the log In icon (if the user is not logged in show the user LogIn button)
+            <Button
+              // on click runs the login fucntion
+              onClick={login}
+              className="bg-green-600 hover:bg-green-700 text-white text-sm md:text-base"
+            >
+              Login
+              {/* login icon from lucid react */}
+              <LogIn className="ml-1 md:ml-2 h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </header>
