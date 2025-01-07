@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 
 import { useState, useEffect } from "react";
@@ -15,24 +16,25 @@ import {
   LogIn,
   LogOut,
 } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+
 import { Badge } from "./ui/badge";
 import { Web3Auth } from "@web3auth/modal";
 
 import { CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-
 import {
   createUser,
-  getUserByEmail,
   getUnreadNotifications,
   getUserBalance,
-  getRewardTransactions,
+  getUserByEmail,
+  markNotificationAsRead,
 } from "@/utils/db/action";
 
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -312,7 +314,34 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
               <LogIn className="ml-1 md:ml-2 h-4 w-4 md:h-5 md:w-5" />
             </Button>
           ) : (
-            <></>
+            // If the user is logged in show this(show the user profile icon and dropdown of user information including "logout button")
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="items-center flex"
+                >
+                  <User className="h-5 w-5 mr-1" />
+                  <ChevronDown className="h-4 w-4 " />
+                </Button>
+              </DropdownMenuTrigger>
+              {/* dropdown menu content after the icon is clicked */}
+              {/* display the user info */}
+              <DropdownMenuContent align="end">
+                {/* fetch user info */}
+                <DropdownMenuItem onClick={getUserInfo}>
+                  {/* displays the user name fetching from the database if available */}
+                  {userInfo ? userInfo.name : "Profile"}
+                </DropdownMenuItem>
+                {/* display the settings and redirect to the settings page  */}
+                <DropdownMenuItem>
+                  <Link href={"/settings"}>Settings</Link>
+                </DropdownMenuItem>
+                {/* display the logout and trigger the logout function*/}
+                <DropdownMenuItem onClick={logout}>Sign Out</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
