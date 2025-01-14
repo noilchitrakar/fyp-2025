@@ -1,5 +1,5 @@
 import { db } from "./dbConfig";
-import { Notifications, Users, Transactions } from "./schema";
+import { Notifications, Users, Transactions, Reports, Rewards } from "./schema";
 import { eq, sql, and, desc } from "drizzle-orm";
 
 export async function createUser(email: string, name: string) {
@@ -93,5 +93,68 @@ export async function markNotificationAsRead(notificationId: number) {
   } catch (error) {
     console.error("Error making notification as read", error);
     return null;
+  }
+}
+
+export async function createReport(
+  userId: number,
+  location: string,
+  wasteType: string,
+  amount: string,
+  imageUrl?: string,
+  verificationResult?: any
+) {
+  try {
+    const [report] = await db
+      .insert(Reports)
+      .values({
+        userId,
+        location,
+        wasteType,
+        amount,
+        imageUrl,
+        verificationResult,
+        status: "pending",
+      })
+      .returning()
+      .execute();
+    // What the user is going to be rewarded when reporting waste
+    const pointsEarned = 10;
+    // updateRewardsPoints
+    await updateRewardsPoints(userId, pointsEarned);
+
+    //createTransaction
+    await createTransaction(
+      userId,
+      "earned_report",
+      pointsEarned,
+      "Points earned for reporting waste"
+    );
+    //createNotification
+
+    await createNotification(
+      userId,
+      `You've earned ${pointsEarned} points for reporting waste!`,
+      "reward"
+    );
+  } catch (e) {
+    console.error("Error creating report", e);
+    return null;
+  }
+}
+
+export async function updateRewardsPoints(userId: number, pointsToAdd: number) {
+  try {
+    const [updatedReward] = await db
+      .update(Rewards)
+      .set({
+        points: sql`${Rewards.points} +${pointsToAdd}`,
+      })
+      .where(eq(Rewards.userId, userId))
+      .returning()
+      .execute();
+    return updatedReward;
+  } catch (e) {
+    console.error("Error updating reward points", e);
   }
 }
