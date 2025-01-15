@@ -35,7 +35,7 @@ import {
   getUserBalance,
   getUserByEmail,
   markNotificationAsRead,
-} from "@/utils/db/action";
+} from "@/utils/db/actions";
 
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 

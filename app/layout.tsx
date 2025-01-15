@@ -11,6 +11,7 @@ import "./globals.css";
 
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
+import { getAvailableRewards, getUserByEmail } from "@/utils/db/actions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,30 @@ export default function RootLayout({
 }>) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [totalEarnings, setTotalEarnings] = useState(0);
+
+  useEffect(() => {
+    const fetchTotalEarnings = async () => {
+      try {
+        const userEmail = localStorage.getItem("userEmail");
+        if (userEmail) {
+          const user = await getUserByEmail(userEmail);
+          console.log("user from layout", user);
+
+          if (user) {
+            const availableRewards = (await getAvailableRewards(
+              user.id
+            )) as any;
+            console.log("availableRewards from layout", availableRewards);
+            setTotalEarnings(availableRewards);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching total earnings:", error);
+      }
+    };
+
+    fetchTotalEarnings();
+  }, []); // we have an empty dependency array here [] to ensure that this effect runs only once on the component Mount
 
   return (
     <html lang="en">
