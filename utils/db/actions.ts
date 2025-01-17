@@ -265,3 +265,52 @@ export async function getAvailableRewards(userId: number) {
     return [];
   }
 }
+
+export async function getWasteCollectionTasks(limit: number = 20) {
+  try {
+    const tasks = await db
+      .select({
+        id: Reports.id,
+        location: Reports.location,
+        wasteType: Reports.wasteType,
+        amount: Reports.amount,
+        status: Reports.status,
+        date: Reports.createdAt,
+        collectorId: Reports.collectorId,
+      })
+      .from(Reports) //from report tables
+      .limit(limit)
+      .execute();
+
+    return tasks.map((task: any) => ({
+      ...task,
+      date: task.date.toISOString().split("T")[0], // Format date as YYYY-MM-DD
+    }));
+  } catch (error) {
+    console.error("Error fetching waste collection tasks:", error);
+    return [];
+  }
+}
+
+export async function updateTaskStatus(
+  reportId: number,
+  newStatus: string,
+  collectorId?: number
+) {
+  try {
+    const updateData: any = { status: newStatus };
+    if (collectorId !== undefined) {
+      updateData.collectorId = collectorId;
+    }
+    const [updatedReport] = await db
+      .update(Reports)
+      .set(updateData)
+      .where(eq(Reports.id, reportId))
+      .returning()
+      .execute();
+    return updatedReport;
+  } catch (error) {
+    console.error("Error updating task status:", error);
+    throw error;
+  }
+}
