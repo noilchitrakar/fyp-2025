@@ -112,6 +112,8 @@ export default function ReportPage() {
     });
   };
 
+  console.log("API Key:", geminiApiKey);
+
   //this will verify the Image using google generative AI
   const handleVerify = async () => {
     if (!file) return;

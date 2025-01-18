@@ -1,5 +1,12 @@
 import { db } from "./dbConfig";
-import { Notifications, Users, Transactions, Reports, Rewards } from "./schema";
+import {
+  Notifications,
+  Users,
+  Transactions,
+  Reports,
+  Rewards,
+  CollectedWastes,
+} from "./schema";
 import { eq, sql, and, desc } from "drizzle-orm";
 
 export async function createUser(email: string, name: string) {
@@ -276,7 +283,7 @@ export async function getWasteCollectionTasks(limit: number = 20) {
         amount: Reports.amount,
         status: Reports.status,
         date: Reports.createdAt,
-        collectorId: Reports.collectorId,
+        collectorId: Reports.collectorID,
       })
       .from(Reports) //from report tables
       .limit(limit)
@@ -311,6 +318,58 @@ export async function updateTaskStatus(
     return updatedReport;
   } catch (error) {
     console.error("Error updating task status:", error);
+    throw error;
+  }
+}
+
+export async function saveReward(userId: number, amount: number) {
+  try {
+    const [reward] = await db
+      .insert(Rewards)
+      .values({
+        userId,
+        name: "Waste Collection Reward",
+        collectionInfo: "Points earned from waste collection",
+        points: amount,
+        isAvailable: true,
+      })
+      .returning()
+      .execute();
+
+    // Create a transaction for this reward
+    await createTransaction(
+      userId,
+      "earned_collect",
+      amount,
+      "Points earned for collecting waste"
+    );
+
+    return reward;
+  } catch (error) {
+    console.error("Error saving reward:", error);
+    throw error;
+  }
+}
+
+export async function saveCollectedWaste(
+  reportId: number,
+  collectorId: number,
+  verificationResult: any
+) {
+  try {
+    const [collectedWaste] = await db
+      .insert(CollectedWastes)
+      .values({
+        reportId,
+        collectorId,
+        collectionDate: new Date(),
+        status: "verified",
+      })
+      .returning()
+      .execute();
+    return collectedWaste;
+  } catch (error) {
+    console.error("Error saving collected waste:", error);
     throw error;
   }
 }
