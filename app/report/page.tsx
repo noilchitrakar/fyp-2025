@@ -171,7 +171,7 @@ export default function ReportPage() {
       console.log("Raw response:", text);
 
       //Formating it into understandable Json format
-      const cleanedText = text.replace(/```json|```/g, "").trim();
+      const cleanedText = text.replace(/```json|```/g, "").trim(); //bug fixer
 
       //printing the clearned JSON response
       console.log("cleaned response:", cleanedText);
