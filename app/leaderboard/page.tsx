@@ -13,6 +13,7 @@ type Reward = {
   userName: string | null;
 };
 
+//leaderboard Page
 export default function LeaderboardPage() {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
