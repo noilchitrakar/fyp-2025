@@ -273,6 +273,31 @@ export async function getAvailableRewards(userId: number) {
   }
 }
 
+// export async function getWasteCollectionTasks(limit: number = 20) {
+//   try {
+//     const tasks = await db
+//       .select({
+//         id: Reports.id,
+//         location: Reports.location,
+//         wasteType: Reports.wasteType,
+//         amount: Reports.amount,
+//         status: Reports.status,
+//         date: Reports.createdAt,
+//         collectorId: Reports.collectorID,
+//       })
+//       .from(Reports) //from report tables
+//       .limit(limit)
+//       .execute();
+
+//     return tasks.map((task: any) => ({
+//       ...task,
+//       date: task.date.toISOString().split("T")[0], // Format date as YYYY-MM-DD
+//     }));
+//   } catch (error) {
+//     console.error("Error fetching waste collection tasks:", error);
+//     return [];
+//   }
+// }
 export async function getWasteCollectionTasks(limit: number = 20) {
   try {
     const tasks = await db
@@ -284,8 +309,9 @@ export async function getWasteCollectionTasks(limit: number = 20) {
         status: Reports.status,
         date: Reports.createdAt,
         collectorId: Reports.collectorID,
+        reporterId: Reports.userId, // <-- Added to fetch reporter's user id
       })
-      .from(Reports) //from report tables
+      .from(Reports) // from the reports table
       .limit(limit)
       .execute();
 

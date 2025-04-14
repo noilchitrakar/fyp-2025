@@ -44,7 +44,8 @@ const clientId = process.env.WEB3_AUTH_CLIENT_ID;
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0xaa36a7", //chain name space for sepolia(can be found on internet)
-  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  rpcTarget: "https://sepolia.infura.io/v3/68999721c1ff45269dea458a58d640ec", //connects this web to etherum network
+  // rpcTarget: "https://rpc.ankr.com/eth_sepolia", //it's throwing error of(Ankr disabled WebSockets for Sepolia.)
   displayName: "Sepolia Testnet", //using test net as we are only hosting in local but if we host in production we need main net
   blockExplorerUrl: "https://sepolia.etherscan.io", //this url gives every single transcation that has happned in the sepolia testnet
   ticker: "ETH",

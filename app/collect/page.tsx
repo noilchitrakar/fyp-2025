@@ -35,6 +35,7 @@ type CollectionTask = {
   status: "pending" | "in_progress" | "completed" | "verified";
   date: string;
   collectorId: number | null;
+  reporterId: number; // newly added
 };
 
 const ITEMS_PER_PAGE = 5; //in each collect waste page there are 5 collection task card
@@ -328,7 +329,7 @@ export default function CollectPage() {
                   </div>
                 </div>
                 <div className="flex justify-end">
-                  {task.status === "pending" && (
+                  {/* {task.status === "pending" && (
                     <Button
                       onClick={() => handleStatusChange(task.id, "in_progress")}
                       variant="outline"
@@ -336,7 +337,23 @@ export default function CollectPage() {
                     >
                       Start Collection
                     </Button>
-                  )}
+                  )} */}
+                  {task.status === "pending" &&
+                    (user?.id === task.reporterId ? (
+                      <span className="text-red-600 text-sm font-medium">
+                        Cannot Collect
+                      </span>
+                    ) : (
+                      <Button
+                        onClick={() =>
+                          handleStatusChange(task.id, "in_progress")
+                        }
+                        variant="outline"
+                        size="sm"
+                      >
+                        Start Collection
+                      </Button>
+                    ))}
                   {task.status === "in_progress" &&
                     task.collectorId === user?.id && (
                       <Button
