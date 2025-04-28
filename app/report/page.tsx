@@ -1,6 +1,16 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
-import { MapPin, Upload, CheckCircle, Loader } from "lucide-react";
+import {
+  MapPin,
+  Upload,
+  CheckCircle,
+  Loader,
+  UploadCloud,
+  Scan,
+  Trash2,
+  Scale,
+  Send,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 // import { StandaloneSearchBox, useJsApiLoader } from "@react-google-maps/api";
@@ -284,121 +294,149 @@ export default function ReportPage() {
 
   // returning the actual component for the page.tsx part
   return (
-    <div className="p-8 max-w-4xl mx-auto text-gray-800">
-      <h1 className="text-3xl font-semibold mb-6 text-gray-800">
-        Report waste
-      </h1>
-      {/* the main form part inside the white box*/}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-lg mb-12"
-      >
-        <div className="mb-8">
-          <label
-            htmlFor="waste-image"
-            className="block text-lg font-medium text-gray-700 mb-2"
-          >
-            Upload Waste Image
-          </label>
+    <div className="p-6 max-w-6xl mx-auto">
+      {/* Header Section */}
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Report Waste</h1>
+        <p className="text-lg text-gray-600 max-w-3xl">
+          Contribute to cleaner communities by reporting waste and earning
+          rewards for your environmental efforts.
+        </p>
+      </div>
 
-          {/* ---- */}
-          {/* the first section of the form */}
-          {/* the upload waste image and (Upload a fileNo file chosen 
-          or drag and drop PNG, JPG, GIF up to 10MB) section */}
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-green-500 transition-colors duration-300">
-            <div className="space-y-1 text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="flex text-sm text-gray-600">
-                <label
-                  htmlFor="waste-image"
-                  className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-green-500"
-                >
-                  <span>Upload a file</span>
-                  <input
-                    id="waste-image"
-                    name="waste-image"
-                    type="file"
-                    className="sr-only"
-                    onChange={handleFileChange}
-                    accept="image/*"
-                  />
-                </label>
-                <p className="pl-1">or drag and drop</p>
+      {/* Main Form Card */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-12">
+        {/* Form Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-6">
+          <h2 className="text-2xl font-semibold text-white">
+            New Waste Report
+          </h2>
+        </div>
+
+        {/* Form Content */}
+        <form onSubmit={handleSubmit} className="p-8">
+          {/* Image Upload Section */}
+          <div className="mb-10">
+            <label className="block text-lg font-medium text-gray-800 mb-4">
+              Upload Waste Image
+            </label>
+
+            <div className="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-blue-400 transition-all duration-300 bg-gray-50/50">
+              <div className="space-y-3 text-center">
+                <div className="mx-auto bg-blue-100/30 p-4 rounded-full w-16 h-16 flex items-center justify-center">
+                  <UploadCloud className="h-8 w-8 text-blue-600" />
+                </div>
+                <div className="flex flex-col sm:flex-row text-sm text-gray-600 items-center justify-center gap-1">
+                  <label
+                    htmlFor="waste-image"
+                    className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    <span className="text-base">Click to upload</span>
+                    <input
+                      id="waste-image"
+                      name="waste-image"
+                      type="file"
+                      className="sr-only"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                    />
+                  </label>
+                  <p className="text-gray-500">or drag and drop</p>
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
               </div>
-              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
             </div>
           </div>
-        </div>
-        {/* --- */}
-        {/* section for the preview */}
-        {preview && ( // this is an preview and is updated when we upload an image
-          <div className="mt-4 mb-8">
-            <img
-              src={preview} //the image url is whatever the data URL that we have saved inside the state
-              alt="Waste preview"
-              className="max-w-full h-auto rounded-xl shadow-md" //styles and class name for the preview
-            />
-          </div>
-        )}
-        {/* --- */}
-        {/* the verify waste button  */}
-        <Button
-          type="button"
-          onClick={handleVerify} //when the button is clicked "handleVerify" function executes
-          className="w-full mb-8 bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg rounded-xl transition-colors duration-300"
-          disabled={!file || verificationStatus === "verifying"} //make this button disabled if there is no file (meaning if there is no file uploaded)
-        >
-          {verificationStatus === "verifying" ? ( //when verificationStatus is verifying (loads an buffer animation)
-            <>
-              <Loader className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
-              Verifying...
-            </>
-          ) : (
-            "Verify Waste"
+
+          {/* Image Preview */}
+          {preview && (
+            <div className="mt-6 mb-8 flex justify-center">
+              <div className="relative group">
+                <img
+                  src={preview}
+                  alt="Waste preview"
+                  className="max-w-full h-64 object-contain rounded-lg shadow-md border border-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPreview("")}
+                  className="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           )}
-        </Button>
-        {/* --- */}
-        {/* if the verification is successful we want to display this card 
-        this will contain all the information about the verification result
-        coming from the AI*/}
-        {verificationStatus === "success" && verificationResult && (
-          <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-8 rounded-r-xl">
-            <div className="flex items-center">
-              <CheckCircle className="h-6 w-6 text-green-400 mr-3" />
-              <div>
-                <h3 className="text-lg font-medium text-green-800">
-                  Verification Successful
-                </h3>
-                <div className="mt-2 text-sm text-green-700">
-                  <p>Waste Type: {verificationResult.wasteType}</p>
-                  <p>Quantity: {verificationResult.quantity}</p>
-                  <p>
-                    Confidence:{" "}
-                    {(verificationResult.confidence * 100).toFixed(2)}%
-                  </p>
+
+          {/* Verify Button */}
+          <Button
+            type="button"
+            onClick={handleVerify}
+            className="w-full mb-8 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-4 text-lg rounded-xl shadow-md transition-all duration-300"
+            disabled={!file || verificationStatus === "verifying"}
+          >
+            {verificationStatus === "verifying" ? (
+              <>
+                <Loader className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                Analyzing Waste...
+              </>
+            ) : (
+              <>
+                <Scan className="h-5 w-5 mr-2" />
+                Analyze Waste
+              </>
+            )}
+          </Button>
+
+          {/* Verification Result */}
+          {verificationStatus === "success" && verificationResult && (
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8 rounded-r-xl">
+              <div className="flex items-start">
+                <CheckCircle className="h-6 w-6 text-blue-500 mr-4 mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">
+                    Analysis Complete
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white p-3 rounded-lg border border-blue-100">
+                      <p className="text-xs text-blue-500 font-medium">
+                        Waste Type
+                      </p>
+                      <p className="font-medium">
+                        {verificationResult.wasteType}
+                      </p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-blue-100">
+                      <p className="text-xs text-blue-500 font-medium">
+                        Quantity
+                      </p>
+                      <p className="font-medium">
+                        {verificationResult.quantity}
+                      </p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-blue-100">
+                      <p className="text-xs text-blue-500 font-medium">
+                        Confidence
+                      </p>
+                      <p className="font-medium">
+                        {(verificationResult.confidence * 100).toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        {/* --- */}
-        {/* the input boxes section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {/* the Div for location and input field */}
-          <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Location
-            </label>
+          )}
 
-            {/* the below code is commented out because i don't have money for Google maps API */}
-            {/* {isLoaded ? (
-              <StandaloneSearchBox
-                onLoad={onLoad}
-                onPlacesChanged={onPlacesChanged}
-              >
+          {/* Form Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Location Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Location
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
                   id="location"
@@ -406,158 +444,130 @@ export default function ReportPage() {
                   value={newReport.location}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="Enter waste location"
                 />
-              </StandaloneSearchBox>
+              </div>
+            </div>
+
+            {/* Waste Type Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Waste Type
+              </label>
+              <div className="relative">
+                <Trash2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  id="type"
+                  name="type"
+                  value={newReport.type}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Verified waste type"
+                  readOnly
+                />
+              </div>
+            </div>
+
+            {/* Amount Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Estimated Amount
+              </label>
+              <div className="relative">
+                <Scale className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  id="amount"
+                  name="amount"
+                  value={newReport.amount}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Verified amount"
+                  readOnly
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-600 to-cyan-500  hover:from-blue-700 hover:to-cyan-600 text-white py-4 text-lg rounded-xl shadow-md transition-all duration-300"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                Submitting Report...
+              </>
             ) : (
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={newReport.location}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300"
-                placeholder="Enter waste location"
-              />
-            )} */}
+              <>
+                <Send className="h-5 w-5 mr-2" />
+                Submit Report
+              </>
+            )}
+          </Button>
+        </form>
+      </div>
 
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={newReport.location}
-              onChange={handleInputChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300"
-              placeholder="Enter waste location"
-            />
-          </div>
+      {/* Recent Reports Section */}
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          Recent Reports
+        </h2>
+        <p className="text-gray-600">Your community's latest contributions</p>
+      </div>
 
-          {/* the Div for waste type and input field */}
-          <div>
-            <label
-              htmlFor="type"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Waste Type
-            </label>
-            <input
-              type="text"
-              id="type"
-              name="type"
-              value={newReport.type}
-              onChange={handleInputChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 bg-gray-100"
-              placeholder="Verified waste type"
-              readOnly
-            />
-          </div>
-
-          {/* the Div for waste amount and input field */}
-          <div>
-            <label
-              htmlFor="amount"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Estimated Amount
-            </label>
-            <input
-              type="text"
-              id="amount"
-              name="amount"
-              value={newReport.amount}
-              onChange={handleInputChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 bg-gray-100"
-              placeholder="Verified amount"
-              readOnly
-            />
-          </div>
-        </div>
-        {/* --- */}
-        {/* the button for uploading/submitting the waste report */}
-
-        <Button
-          type="submit"
-          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg rounded-xl transition-colors duration-300 flex items-center justify-center"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
-              Submitting...
-            </>
-          ) : (
-            "Submit Report"
-          )}
-        </Button>
-      </form>
-      {/* --------------------- */}
-      {/* the Recent Reports section */}
-
-      {/* the header for the recent reports */}
-      <h2 className="text-3xl font-semibold mb-6 text-gray-800">
-        Recent Reports
-      </h2>
-
-      {/* --- */}
-
-      {/* creating the table for Recent reports that will come from the database */}
-
-      {/* just creating the white big box  */}
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-        {/* creating the table part maximum height for the table is set to 96*/}
-        <div className="max-h-96 overflow-y-auto">
-          <table className="w-full">
-            {/* ---- */}
-            {/* just the table heads  */}
+      {/* Reports Table */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="max-h-[500px] overflow-y-auto">
+          <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Location
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date Reported
                 </th>
               </tr>
             </thead>
-            {/* ---- */}
-
-            {/* the table bodies  */}
-            <tbody className="divide-y divide-gray-200">
-              {/* looping through all the report  */}
+            <tbody className="bg-white divide-y divide-gray-200">
               {reports.map((report) => (
-                // table row
                 <tr
                   key={report.id}
-                  className="hover:bg-gray-50 transition-colors duration-200"
+                  className="hover:bg-gray-50 transition-colors"
                 >
-                  {/* table data  */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {/* including the MapPin Icon from lucide react */}
-                    <MapPin className="inline-block w-4 h-4 mr-2 text-green-500" />
-                    {report.location}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <MapPin className="flex-shrink-0 h-5 w-5 text-blue-500 mr-2" />
+                      <span className="text-sm font-medium text-gray-900">
+                        {report.location}
+                      </span>
+                    </div>
                   </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {report.wasteType}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {report.wasteType}
+                    </div>
                   </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {report.amount}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{report.amount}</div>
                   </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {report.createdAt}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {report.createdAt}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -565,8 +575,6 @@ export default function ReportPage() {
           </table>
         </div>
       </div>
-
-      {/* ---------- */}
     </div>
   );
 }

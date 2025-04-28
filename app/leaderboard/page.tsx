@@ -70,7 +70,7 @@ export default function LeaderboardPage() {
           //else display the leaderboard
           //the header section start
           <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-green-500 to-green-600 p-6">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
               <div className="flex justify-between items-center text-white">
                 {/* show the trophy icon */}
                 <Trophy className="h-10 w-10" />

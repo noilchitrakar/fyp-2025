@@ -33,8 +33,8 @@ export default function Sidebar({ open }: SidebarProps) {
                 variant={pathname === item.href ? "secondary" : "ghost"}
                 className={`w-full justify-start py-3 ${
                   pathname === item.href
-                    ? "bg-green-100 text-green-800"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-gradient-to-r from-blue-200 to-cyan-200"
+                    : "text-gray-600 hover:bg-blue-50"
                 }`}
               >
                 <item.icon className="mr-3 h-5 w-5" />
@@ -50,7 +50,7 @@ export default function Sidebar({ open }: SidebarProps) {
               variant={pathname === "/settings" ? "secondary" : "outline"}
               className={`w-full py-3 ${
                 pathname === "/settings"
-                  ? "bg-green-100 text-green-800"
+                  ? "bg-blue-100 text-blue-800"
                   : "text-gray-600 border-gray-300 hover:bg-gray-100"
               }`}
             >
