@@ -190,6 +190,18 @@ export default function ReportPage() {
       try {
         const parsedResult = JSON.parse(cleanedText);
         if (
+          ["no waste", "not waste", "none", "unknown"].includes(
+            parsedResult.wasteType.toLowerCase()
+          )
+        ) {
+          toast.error(
+            "This image does not appear to contain recognizable waste. Please try another."
+          );
+          setVerificationStatus("failure");
+          return;
+        }
+
+        if (
           parsedResult.wasteType &&
           parsedResult.quantity &&
           parsedResult.confidence
@@ -215,12 +227,64 @@ export default function ReportPage() {
     }
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   // if (verificationStatus !== "success" || !user) {
+  //   //   toast.error("Please verify the waste before submitting or log in.");
+  //   //   return;
+  //   // }
+  //   if (
+  //     verificationStatus !== "success" ||
+  //     !user ||
+  //     !file ||
+  //     !verificationResult?.wasteType ||
+  //     !verificationResult?.quantity ||
+  //     verificationResult?.confidence < 0.6 // you can adjust this threshold
+  //   ) {
+  //     toast.error(
+  //       "Please upload and verify a valid waste image before submitting."
+  //     );
+  //     return;
+  //   }
+
+  const isWasteTypeInvalid = (wasteType: string | undefined): boolean => {
+    if (!wasteType) return true;
+
+    const invalidPhrases = [
+      "no waste",
+      "no waste shown",
+      "not waste",
+      "no trash",
+      "empty",
+      "none",
+      "unidentified",
+      "unknown",
+      "nothing detected",
+    ];
+
+    const lower = wasteType.toLowerCase();
+    return invalidPhrases.some((phrase) => lower.includes(phrase));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (verificationStatus !== "success" || !user) {
-      toast.error("Please verify the waste before submitting or log in.");
+    const invalidWasteTypes = ["no waste", "not waste", "none", "unknown"];
+
+    if (
+      verificationStatus !== "success" ||
+      !user ||
+      !file ||
+      !verificationResult?.wasteType ||
+      !verificationResult?.quantity ||
+      verificationResult?.confidence < 0.6 ||
+      isWasteTypeInvalid(verificationResult?.wasteType)
+    ) {
+      toast.error(
+        "Only valid waste images can be submitted. Try again with a clearer photo."
+      );
       return;
     }
+
     setIsSubmitting(true);
 
     try {
@@ -496,8 +560,16 @@ export default function ReportPage() {
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-cyan-500  hover:from-blue-700 hover:to-cyan-600 text-white py-4 text-lg rounded-xl shadow-md transition-all duration-300"
-            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-4 text-lg rounded-xl shadow-md transition-all duration-300"
+            disabled={
+              isSubmitting ||
+              !file ||
+              verificationStatus !== "success" ||
+              !verificationResult?.wasteType ||
+              !verificationResult?.quantity ||
+              verificationResult?.confidence < 0.6 ||
+              isWasteTypeInvalid(verificationResult?.wasteType)
+            }
           >
             {isSubmitting ? (
               <>

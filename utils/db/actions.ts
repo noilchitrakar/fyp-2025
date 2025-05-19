@@ -310,6 +310,7 @@ export async function getWasteCollectionTasks(limit: number = 20) {
         date: Reports.createdAt,
         collectorId: Reports.collectorID,
         reporterId: Reports.userId, // <-- Added to fetch reporter's user id
+        imageUrl: Reports.imageUrl,
       })
       .from(Reports) // from the reports table
       .limit(limit)
@@ -420,5 +421,78 @@ export async function saveCollectedWaste(
   } catch (error) {
     console.error("Error saving collected waste:", error);
     throw error;
+  }
+}
+
+export async function redeemReward(userId: number, rewardId: number) {
+  // 1️⃣ If rewardId is 0, subtract their entire balance
+  if (rewardId === 0) {
+    const currentBalance = await getUserBalance(userId);
+    // passing a negative value subtracts via updateRewardsPoints
+    return updateRewardsPoints(userId, -currentBalance);
+  }
+
+  // 2️⃣ Otherwise, look up that reward's cost
+  const [row] = await db
+    .select({ cost: Rewards.points })
+    .from(Rewards)
+    .where(eq(Rewards.id, rewardId))
+    .execute();
+
+  if (!row) {
+    throw new Error(`Reward with ID ${rewardId} not found`);
+  }
+  const cost = row.cost;
+
+  // 3️⃣ Subtract that cost from the user's points
+  return updateRewardsPoints(userId, -cost);
+}
+
+// utils/db/actions.ts
+
+export async function getAllRewardTransactions(): Promise<
+  { userId: number; type: string; amount: number }[]
+> {
+  try {
+    const rows = await db
+      .select({
+        userId: Transactions.userId,
+        type: Transactions.type,
+        amount: Transactions.amount,
+      })
+      .from(Transactions)
+      .orderBy(desc(Transactions.date))
+      .execute();
+
+    return rows;
+  } catch (e) {
+    console.error("Error fetching all reward transactions", e);
+    return [];
+  }
+}
+
+/**
+ * Fetch a single user by ID
+ */
+export async function getUserById(userId: number): Promise<{
+  id: number;
+  email: string;
+  name: string;
+} | null> {
+  try {
+    const [user] = await db
+      .select({
+        id: Users.id,
+        email: Users.email,
+        name: Users.name,
+      })
+      .from(Users)
+      .where(eq(Users.id, userId))
+      .execute();
+
+    return user ?? null;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return null;
   }
 }
