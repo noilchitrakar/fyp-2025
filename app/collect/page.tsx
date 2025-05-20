@@ -5,8 +5,6 @@ import {
   MapPin,
   CheckCircle,
   Clock,
-  ArrowRight,
-  Camera,
   Upload,
   Loader,
   Calendar,
@@ -101,34 +99,6 @@ export default function CollectPage() {
   } | null>(null);
   const [reward, setReward] = useState<number | null>(null);
 
-  // const handleStatusChange = async (
-  //   taskId: number,
-  //   newStatus: CollectionTask["status"]
-  // ) => {
-  //   if (!user) {
-  //     toast.error("Please log in to collect waste.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const updatedTask = await updateTaskStatus(taskId, newStatus, user.id);
-  //     if (updatedTask) {
-  //       setTasks(
-  //         tasks.map((task) =>
-  //           task.id === taskId
-  //             ? { ...task, status: newStatus, collectorId: user.id }
-  //             : task
-  //         )
-  //       );
-  //       toast.success("Task status updated successfully");
-  //     } else {
-  //       toast.error("Failed to update task status. Please try again.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating task status:", error);
-  //     toast.error("Failed to update task status. Please try again.");
-  //   }
-  // };
   useEffect(() => {
     // scan every minute for any stale “in_progress” tasks
     const checkExpiry = () => {
@@ -225,108 +195,6 @@ export default function CollectPage() {
   };
   console.log("API Key:", geminiApiKey);
 
-  // const handleVerify = async () => {
-  //   if (!selectedTask || !verificationImage || !user) {
-  //     toast.error("Missing required information for verification.");
-  //     return;
-  //   }
-
-  //   setVerificationStatus("verifying");
-
-  //   try {
-  //     const genAI = new GoogleGenerativeAI(geminiApiKey!);
-  //     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-  //     //   const base64Data = await readFileAsBase64(verificationImage);
-  //     const base64Data = await readFileAsBase64(verificationImage);
-
-  //     const imageParts = [
-  //       {
-  //         inlineData: {
-  //           data: base64Data,
-  //           mimeType: "image/jpeg", // Adjust this if you know the exact type
-  //         },
-  //       },
-  //     ];
-
-  //     const prompt = `You are an expert in waste management and recycling. Analyze this image and provide:
-  //       1. Confirm if the waste type matches: ${selectedTask.wasteType}
-  //       2. Estimate if the quantity matches: ${selectedTask.amount}
-  //       3. Your confidence level in this assessment (as a percentage)
-
-  //       Respond in JSON format like this:
-  //       {
-  //         "wasteTypeMatch": true/false,
-  //         "quantityMatch": true/false,
-  //         "confidence": confidence level as a number between 0 and 1
-  //       }`;
-
-  //     const result = await model.generateContent([prompt, ...imageParts]);
-  //     const response = await result.response;
-  //     const text = response.text();
-
-  //     //printing the raw AI response
-  //     console.log("Raw response:", text);
-
-  //     //Formating it into understandable Json format
-  //     const cleanedText = text.replace(/```json|```/g, "").trim();
-
-  //     //printing the clearned JSON response
-  //     console.log("cleaned response:", cleanedText);
-
-  //     try {
-  //       const parsedResult = JSON.parse(cleanedText);
-  //       setVerificationResult({
-  //         wasteTypeMatch: parsedResult.wasteTypeMatch,
-  //         quantityMatch: parsedResult.quantityMatch,
-  //         confidence: parsedResult.confidence,
-  //       });
-  //       setVerificationStatus("success");
-
-  //       if (
-  //         parsedResult.wasteTypeMatch &&
-  //         parsedResult.quantityMatch &&
-  //         parsedResult.confidence > 0.7
-  //       ) {
-  //         await handleStatusChange(selectedTask.id, "verified");
-  //         const earnedReward = Math.floor(Math.random() * 50) + 10; // Random reward between 10 and 59
-  //         //better suggestion is you can use other algorithm to calculate this reward with the qunatity,waste type and confidence score
-
-  //         // Save the reward
-  //         await saveReward(user.id, earnedReward);
-
-  //         // Save the collected waste
-  //         await saveCollectedWaste(selectedTask.id, user.id, parsedResult);
-
-  //         setReward(earnedReward);
-  //         toast.success(
-  //           `Verification successful! You earned ${earnedReward} tokens!`,
-  //           {
-  //             duration: 5000,
-  //             position: "top-center",
-  //           }
-  //         );
-  //       } else {
-  //         toast.error(
-  //           "Verification failed. The collected waste does not match the reported waste.",
-  //           {
-  //             duration: 5000,
-  //             position: "top-center",
-  //           }
-  //         );
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-
-  //       console.error("Failed to parse JSON response:", text);
-  //       setVerificationStatus("failure");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error verifying waste:", error);
-  //     setVerificationStatus("failure");
-  //   }
-  // };
-
   const handleVerify = async () => {
     if (!selectedTask || !verificationImage || !user) {
       toast.error("Missing required information for verification.");
@@ -346,10 +214,10 @@ export default function CollectPage() {
         reader.readAsDataURL(origBlob);
       });
 
-      // ── 2) EXTRACT COLLECTED IMAGE AS BASE64
+      //2) EXTRACT COLLECTED IMAGE AS BASE64
       const collBase64 = readFileAsBase64(verificationImage);
 
-      // ── 3) BUILD MULTIMODAL PAYLOAD
+      // 3) BUILD MULTIMODAL PAYLOAD
       const imageParts = [
         {
           inlineData: { data: origBase64, mimeType: origBlob.type },
@@ -399,7 +267,22 @@ The originally reported quantity was: ${selectedTask.amount}
         await handleStatusChange(selectedTask.id, "verified");
 
         // Award points
-        const earnedReward = Math.floor(Math.random() * 50) + 10;
+        // const earnedReward = Math.floor(Math.random() * 50) + 10;
+        // Trying to extract the numeric value from reported quantity string (e.g., "2.5 kg")
+        let extractedWeight = 0;
+        const quantityStr = selectedTask.amount || "";
+
+        const match = quantityStr.match(/[\d.]+/); // Extract numbers like 1, 2.5, etc.
+        if (match) {
+          extractedWeight = parseFloat(match[0]);
+        }
+
+        const tokenRate = 10; // 10 tokens per kg
+        const earnedReward = Math.max(
+          Math.floor(extractedWeight * tokenRate),
+          5
+        ); // At least 5 tokens
+
         await saveReward(user.id, earnedReward);
         await saveCollectedWaste(selectedTask.id, user.id, parsed);
         setReward(earnedReward);
@@ -678,14 +561,6 @@ The originally reported quantity was: ${selectedTask.amount}
           </div>
         </div>
       )}
-      {/* ---- */}
-      {/* Add a conditional render to show user info or login prompt */}
-      {/* {user ? (
-        <p className="text-sm text-gray-600 mb-4">Logged in as: {user.name}</p>
-      ) : (
-        <p className="text-sm text-red-600 mb-4">Please log in to collect waste and earn rewards.</p>
-      )} */}
-      {/* --- */}
     </div>
   );
 }

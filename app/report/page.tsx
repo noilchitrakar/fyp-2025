@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-// import { StandaloneSearchBox, useJsApiLoader } from "@react-google-maps/api";
-// import { Libraries } from "@react-google-maps/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import {
@@ -25,9 +23,6 @@ import {
 } from "@/utils/db/actions";
 
 const geminiApiKey = process.env.GEMINI_API_KEY as any;
-// const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY as any;
-
-// const libraries: Libraries = ["places"]; for google maps api (not putting it because need money)
 
 export default function ReportPage() {
   const [user, setUser] = useState<{
@@ -66,32 +61,6 @@ export default function ReportPage() {
     confidence: number;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  //   const [searchBox, setSearchBox] =
-  //     useState<google.maps.places.SearchBox | null>(null);
-
-  //   const { isLoaded } = useJsApiLoader({
-  //     id: "google-map-script",
-  //     googleMapsApiKey: googleMapsApiKey!,
-  //     libraries: libraries,
-  //   });
-
-  //   const onLoad = useCallback((ref: google.maps.places.SearchBox) => {
-  //     setSearchBox(ref);
-  //   }, []);
-
-  //   const onPlacesChanged = () => {
-  //     if (searchBox) {
-  //       const places = searchBox.getPlaces();
-  //       if (places && places.length > 0) {
-  //         const place = places[0];
-  //         setNewReport((prev) => ({
-  //           ...prev,
-  //           location: place.formatted_address || "",
-  //         }));
-  //       }
-  //     }
-  //   };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -226,26 +195,6 @@ export default function ReportPage() {
       setVerificationStatus("failure");
     }
   };
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   // if (verificationStatus !== "success" || !user) {
-  //   //   toast.error("Please verify the waste before submitting or log in.");
-  //   //   return;
-  //   // }
-  //   if (
-  //     verificationStatus !== "success" ||
-  //     !user ||
-  //     !file ||
-  //     !verificationResult?.wasteType ||
-  //     !verificationResult?.quantity ||
-  //     verificationResult?.confidence < 0.6 // you can adjust this threshold
-  //   ) {
-  //     toast.error(
-  //       "Please upload and verify a valid waste image before submitting."
-  //     );
-  //     return;
-  //   }
 
   const isWasteTypeInvalid = (wasteType: string | undefined): boolean => {
     if (!wasteType) return true;

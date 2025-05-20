@@ -26,19 +26,19 @@ export default function LeaderboardPage() {
     async function fetchLeaderboard() {
       setLoading(true);
       try {
-        // 1️⃣ Get all transactions
+        // Get all transactions
         const txs = await getAllRewardTransactions();
 
-        // 2️⃣ Keep only positive earns
+        // Keep only positive earns
         const earned = txs.filter((t) => t.type.startsWith("earned"));
 
-        // 3️⃣ Sum per userId
+        // Sum per userId
         const totals = earned.reduce((map, { userId, amount }) => {
           map.set(userId, (map.get(userId) || 0) + amount);
           return map;
         }, new Map<number, number>());
 
-        // 4️⃣ Build entries, fetching each user’s name
+        // 4️Build entries, fetching each user’s name
         const rows: LeaderboardEntry[] = [];
         for (const [userId, points] of totals.entries()) {
           const user = await getUserById(userId);
@@ -50,11 +50,11 @@ export default function LeaderboardPage() {
           });
         }
 
-        // 5️⃣ Sort descending
+        // Sort descending
         rows.sort((a, b) => b.points - a.points);
         setEntries(rows);
 
-        // 6️⃣ Highlight currently logged-in user
+        // Highlight currently logged-in user
         const email = localStorage.getItem("userEmail");
         if (email) {
           const me = await getUserByEmail(email);

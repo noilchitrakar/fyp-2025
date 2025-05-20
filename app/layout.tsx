@@ -21,8 +21,8 @@ export default function RootLayout({
   //we have to add this code before we can render any component within the layout
   children: React.ReactNode;
 }>) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false); //state to handle sidebar open and close
+  const [totalEarnings, setTotalEarnings] = useState(0); // state to handle tokens earned
 
   useEffect(() => {
     const fetchTotalEarnings = async () => {
@@ -57,7 +57,7 @@ export default function RootLayout({
             onMenuClick={() => setSidebarOpen(!sidebarOpen)}
             totalEarnings={totalEarnings}
           />
-          <div className="felx flex-1">
+          <div className="flex flex-1">
             {/* {Sidebar} */}
             <Sidebar open={sidebarOpen} />
             <main className="flex-1 p-4 lg:p-8 ml-0 lg:ml-64 transition-all duration-300">
